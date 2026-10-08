@@ -74,3 +74,32 @@ if __name__ == "__main__":
                 print(value['messages'][0].content)
 
         print("="*60)
+
+# ===========================================
+# 랭그래프 띄우기
+# (hanbit-aiagent) D:\hanbit-aiagent_1007\CHAP6_single-agent>uv run langgraph dev
+
+# langgraph.json
+    # {
+    #   "dependencies": ["./rag_agent"],
+    #   "graphs": {
+    #     "agent": "./rag_agent/agent.py:graph"
+    #   },
+    #   "env": ".env"
+    # }
+
+# ===========================================
+
+# .env
+# OPENAI_API_KEY=${OPENAI_API_KEY}
+# TAVILY_API_KEY=${TAVILY_API_KEY}
+
+# ===========================================
+
+# LangSmith 
+# LANGCHAIN_TRACING_V2=true
+# LANGCHAIN_ENDPOINT="https://api.smith.langchain.com"
+# LANGCHAIN_API_KEY=${LANGCHAIN_API_KEY}
+# LANGCHAIN_PROJECT="proj0929"
+
+# ===========================================

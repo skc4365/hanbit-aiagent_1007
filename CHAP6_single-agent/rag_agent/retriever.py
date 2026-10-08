@@ -3,7 +3,6 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_core.tools import create_retriever_tool
 
 from dotenv import load_dotenv
-
 load_dotenv()
 
 # 이소스에서는 밖의 경로에 DB를 생성하고 있음.
