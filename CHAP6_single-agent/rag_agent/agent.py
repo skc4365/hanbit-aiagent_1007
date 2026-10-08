@@ -11,10 +11,17 @@ from edges import decide_to_generate, check_hallucinations
 
 
 graph_builder = StateGraph(AgentState, input_schema=MessagesState)
+
+# chatbot: 사용자 질문 분석 및 검색 도구 호출 여부 결정
 graph_builder.add_node("chatbot", chatbot)
+
+# retriever: 벡터 DB 문서 검색 및 페이지별 검색 결과 저장
 graph_builder.add_node("retriever", retrieve)
 
+# 시작점 → 사용자 질문 분석
 graph_builder.add_edge(START, "chatbot")
+
+# 검색 도구 호출 → retriever / 일반 답변 → 종료
 graph_builder.add_conditional_edges(
     "chatbot",
     tools_condition,
@@ -24,11 +31,20 @@ graph_builder.add_conditional_edges(
     }
 )
 
+# context_organizer: 검색 문서의 공백·형식 정리
 graph_builder.add_node("context_organizer", context_organizer)
+
+# transform_query: 검색에 적합한 질문으로 재작성
 graph_builder.add_node("transform_query", transform_query)
+
+# generate: 검색 문서 기반 답변 생성 및 출처 표시
+# 재시도 3회 이상: 검색 결과 기반 대체 질문 안내
 graph_builder.add_node("generate", generate)
 
+# 문서 검색 → 검색 결과 정리
 graph_builder.add_edge("retriever", "context_organizer")
+
+# 문서 관련성 낮음 → 질문 재작성 / 관련성 충분 → 답변 생성
 graph_builder.add_conditional_edges(
     "context_organizer",
     decide_to_generate,
@@ -37,7 +53,11 @@ graph_builder.add_conditional_edges(
         "generate": "generate",
     },
 )
+
+# 재작성된 질문 → 문서 재검색
 graph_builder.add_edge("transform_query", "retriever")
+
+# 문서 근거 부족 → 답변 재생성 / 문서 근거 충족 → 종료
 graph_builder.add_conditional_edges(
     "generate",
     check_hallucinations,
